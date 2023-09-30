@@ -5,6 +5,7 @@ const path = require('path')
 const Sequelize = require('sequelize')
 const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || 'development'
+// path.resolve(__dirname) 用於將相對路徑轉換成絕對路徑。__dirname是目前檔案所在目錄的絕對路徑，path.resolve()方法將它與傳入的相對路徑拼接起來，並傳回一個完整的絕對路徑。
 const config = require(path.resolve(__dirname, '../config/config.json'))[env]
 const db = {}
 
