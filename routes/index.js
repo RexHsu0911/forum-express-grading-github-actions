@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
+const { generalErrorHandler } = require('../middleware/error-handler')
+
 const admin = require('./modules/admin')
 const restaurantController = require('../controllers/restaurant-controller')
 const userController = require('../controllers/user-controller')
@@ -13,5 +15,7 @@ router.post('/signup', userController.signUp)
 router.get('/restaurants', restaurantController.getRestaurants)
 // 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
 router.use('/', (req, res) => res.redirect('/restaurants'))
+
+router.use('/', generalErrorHandler)
 
 module.exports = router
