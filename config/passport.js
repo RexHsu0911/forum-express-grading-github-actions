@@ -39,7 +39,7 @@ passport.deserializeUser((id, cb) => {
     .then(user => {
       // toJSON() 將 Sequelize 打包後的物件(可以直接透過 Sequelize 操作這筆資料)，簡化為 JSON 字串
       user = user.toJSON()
-      console.log(user)
+      // console.log(user)
       return cb(null, user)
     })
 })

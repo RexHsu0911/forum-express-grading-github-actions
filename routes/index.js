@@ -8,10 +8,12 @@ const admin = require('./modules/admin')
 const restaurantController = require('../controllers/restaurant-controller')
 const userController = require('../controllers/user-controller')
 
-const { authenticated } = require('../middleware/auth')
+// 把驗證程序 authenticatedAdmin 向上抽離到 routes/index.js
+const { authenticated, authenticatedAdmin } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
 
-router.use('/admin', admin)
+// 只要是 admin 相關的路由，都要經過 auth.js 這個 middleware 的權限檢查，通過才能往下走
+router.use('/admin', authenticatedAdmin, admin)
 
 router.get('/signup', userController.signUpPage)
 router.post('/signup', userController.signUp)
