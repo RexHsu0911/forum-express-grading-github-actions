@@ -29,7 +29,10 @@
           </a>
         </button>
         <form action="/admin/restaurants/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
-          <button type="submit" class="btn btn-link link-danger">Delete</button>
+          {{!-- 使用者點確定 (OK) → confirm() 回傳 true，表單會被提交；使用者點取消 (Cancel) → confirm() 回傳 false。形成 onclick="return false"，表單不會被提交 --}}
+          {{!-- 在 confirm() 方法裡面傳入字串，這裡選擇反引號 confirm(`xxx`)，若傳入的值 Gary's restaurant 裡面也有 ' ，導致這個 function 裡面變成有三個單引號 ' ，而出錯無法執行 --}}
+          <button type="submit" class="btn btn-link link-danger"
+            onclick="return confirm(`確定要刪除 {{ this.name }} 嗎？`)">Delete</button>
         </form>
       </td>
     </tr>
