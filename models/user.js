@@ -17,12 +17,13 @@ module.exports = (sequelize, DataTypes) => {
   User.init({
     name: DataTypes.STRING,
     email: DataTypes.STRING,
-    password: DataTypes.STRING
+    password: DataTypes.STRING,
+    isAdmin: DataTypes.BOOLEAN // 新增欄位
   }, {
     sequelize,
     modelName: 'User',
     tableName: 'Users', // 設定 tableName
-    // 把 lowerCamelCase 和 snack_case 的變數自動做雙向轉換，避開大小寫的問題(isAdmin => is_admin)
+    // 把 lowerCamelCase 的變數自動轉換成 snack_case，避開大小寫的問題(isAdmin => is_admin)
     underscored: true
   })
   return User

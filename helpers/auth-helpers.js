@@ -2,6 +2,13 @@
 const getUser = req => {
   return req.user || null
 }
+
+const ensureAuthenticated = req => {
+  // Passport 提供的 isAuthenticated() 驗證使用者身分
+  return req.isAuthenticated()
+}
+
 module.exports = {
-  getUser
+  getUser,
+  ensureAuthenticated
 }
