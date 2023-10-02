@@ -1,6 +1,7 @@
 const express = require('express')
 const handlebars = require('express-handlebars')
 const flash = require('connect-flash')
+const methodOverride = require('method-override')
 const session = require('express-session')
 const passport = require('./config/passport')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
@@ -25,6 +26,10 @@ app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: fals
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
+// 在 HTML 的 <form> 裡面，action 這個屬性只能夠填 GET 與 POST，並不支援 PUT 跟 DELETE
+// 支援 PUT 跟 DELETE 需要把 form 的 action 填 POST，並在網址後面加上 _method=PUT 或 DELETE
+app.use(methodOverride('_method'))
+
 // 設定 flash message
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
