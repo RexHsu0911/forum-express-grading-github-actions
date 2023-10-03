@@ -1,3 +1,6 @@
+// path 套件跟 fs 一樣都是 node.js 的原生模組，在處理跟檔案有關的事情
+const path = require('path')
+
 const express = require('express')
 const handlebars = require('express-handlebars')
 const flash = require('connect-flash')
@@ -29,6 +32,8 @@ app.use(flash())
 // 在 HTML 的 <form> 裡面，action 這個屬性只能夠填 GET 與 POST，並不支援 PUT 跟 DELETE
 // 支援 PUT 跟 DELETE 需要把 form 的 action 填 POST，並在網址後面加上 _method=PUT 或 DELETE
 app.use(methodOverride('_method'))
+// 設定 express.static 靜態檔案路徑 /upload
+app.use('/upload', express.static(path.join(__dirname, 'upload')))
 
 // 設定 flash message
 app.use((req, res, next) => {
