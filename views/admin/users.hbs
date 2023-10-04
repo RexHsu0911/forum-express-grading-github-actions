@@ -26,7 +26,7 @@
       <td>{{#if this.isAdmin}}admin{{else}}user{{/if}}</td>
       <td>
         <form action="/admin/users/{{this.id}}?_method=PATCH" method="POST" style="display: inline;">
-          <button type="submit" class="btn btn-link" style="text-decoration: none;"
+          <button type="submit" class="btn btn-link link-danger" style="text-decoration: none;"
             onclick="return confirm(`確定要調整「{{this.name}}」的權限嗎？`)">set as {{#if
             this.isAdmin}}user{{else}}admin{{/if}}</button>
         </form>
