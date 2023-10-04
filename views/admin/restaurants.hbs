@@ -1,10 +1,22 @@
-{{> admin-switch-table}}
-<a href='/admin/restaurants/create' style="position: absolute; right:123px; top: 133px;">
+<h1>餐廳後台</h1>
+<ul class="nav nav-tabs my-4">
+  <li class="nav-item">
+    <a class="nav-link active" href='/admin/restaurants/'>Restaurant</a>
+  </li>
+  <li class="nav-item">
+    <div class="nav px-2">|</div>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href='/admin/users/'>User</a>
+  </li>
+</ul>
+<a href='/admin/restaurants/create'>
   <button type="button" class="btn btn-primary">New Restaurant</button>
 </a>
 <br />
+<br />
 <table class="table align-middle">
-  <thead class="table-secondary">
+  <thead class="table-dark">
     <tr>
       <th scope="col">#</th>
       <th scope="col">Name</th>
