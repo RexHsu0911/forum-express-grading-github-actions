@@ -1,14 +1,16 @@
 // 等同於 const db = require('../models')
 // const Restaurant = db.Restaurant
 // 採用解構賦值的寫法
-const { Restaurant, User } = require('../models')
+const { Restaurant, User, Category } = require('../models')
 const { localFileHandler } = require('../helpers/file-helpers')
 
 const adminController = {
   getRestaurants: (req, res, next) => {
     return Restaurant.findAll({
       // {raw: true} 把 Sequelize 包裝過的一大包物件轉換成格式比較單純的 JS 原生物件
-      raw: true
+      raw: true,
+      nest: true, // {nest: true} 把資料整理成比較容易取用的結構
+      include: [Category] // include 取得關聯資料 Category
     })
       .then(restaurants => {
         res.render('admin/restaurants', { restaurants })
@@ -44,7 +46,9 @@ const adminController = {
   getRestaurant: (req, res, next) => {
     // req.params.id 則是對應到路由傳過來的參數(/:id)
     return Restaurant.findByPk(req.params.id, { // 去資料庫用 id 找一筆資料
-      raw: true // 找到以後整理格式再回傳
+      raw: true, // 找到以後整理格式再回傳
+      nest: true, // {raw: true, est: true} 相等於 .toJSON()
+      include: [Category]
     })
       .then(restaurant => {
         if (!restaurant) throw new Error("Restaurant didn't exist!") //  如果找不到，回傳錯誤訊息，後面不執行
