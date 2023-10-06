@@ -29,6 +29,7 @@ router.post('/signin', passport.authenticate('local', { failureRedirect: '/signi
 router.get('/logout', userController.logout)
 
 // restaurants
+router.get('/restaurants/:id/dashboard', authenticated, restaurantController.getDashboard)
 router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 // 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
