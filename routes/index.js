@@ -35,6 +35,7 @@ router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
 // comments
+router.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 router.post('/comments', authenticated, commentController.postComment)
 
 // 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
