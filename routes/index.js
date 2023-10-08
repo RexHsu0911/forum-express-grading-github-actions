@@ -7,6 +7,7 @@ const admin = require('./modules/admin')
 
 const restaurantController = require('../controllers/restaurant-controller')
 const userController = require('../controllers/user-controller')
+const commentController = require('../controllers/comment-controller')
 
 // 把驗證程序 authenticatedAdmin 向上抽離到 routes/index.js
 const { authenticated, authenticatedAdmin } = require('../middleware/auth')
@@ -32,6 +33,10 @@ router.get('/logout', userController.logout)
 router.get('/restaurants/:id/dashboard', authenticated, restaurantController.getDashboard)
 router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
+
+// comments
+router.post('/comments', authenticated, commentController.postComment)
+
 // 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
 router.use('/', (req, res) => res.redirect('/restaurants'))
 

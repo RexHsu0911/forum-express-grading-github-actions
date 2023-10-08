@@ -14,10 +14,22 @@
       </ul>
     </div>
   </div>
-  <div class="col-md-12">
+  <div class="col-md-6 mx-5">
     <p style="white-space: break-spaces;">{{restaurant.description}}</p>
+    <a class="btn btn-primary" href='/restaurants/{{restaurant.id}}/dashboard'>Dashboard</a>
   </div>
-  <a class="btn btn-primary" href='/restaurants/{{restaurant.id}}/dashboard'>Dashboard</a>
   <hr>
 </div>
-<a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+
+{{!-- Comment --}}
+<form action="/comments" method="POST">
+  <div class="form-row mb-3">
+    {{!-- 在 controller 裡想要用 req.body 取得表單內容時，後面接的屬性會對應到各個輸入框的 name 屬性 --}}
+    <label class="form-label" for="text">留下評論：</label>
+    <textarea class="form-control" id="text" name="text" rows="3"></textarea>
+  </div>
+  {{!-- 加了一個隱藏的 input 欄位，幫忙把 restaurant.id 送到後端，讓我們可以在 controller 裡用 req.body.restaurantId 把資料拿出來 --}}
+  <input type="hidden" name="restaurantId" value="{{restaurant.id}}" />
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+</form>
