@@ -52,7 +52,13 @@ const restaurantController = {
       // 項目變多時，需要改成用陣列
       include: [
         Category,
-        { model: Comment, include: User } // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
+        {
+          model: Comment,
+          include: User // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
+        }
+      ],
+      order: [
+        [Comment, 'createdAt', 'DESC'] // 依 Comment 建立時間降冪排序(DESC)
       ]
     })
       .then(restaurant => {
