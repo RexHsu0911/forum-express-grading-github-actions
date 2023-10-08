@@ -79,7 +79,7 @@ const restaurantController = {
         Category,
         Comment
       ]
-      // {nest: true, raw: true}
+      // {nest: true, raw: true} 可能會破壞一對多關聯
     })
       .then(restaurant => {
         // console.log(restaurant.toJSON())

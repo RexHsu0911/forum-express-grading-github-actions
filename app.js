@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
   // 讓所有的 view 都能存取 user
-  res.locals.user = getUser(req)
+  res.locals.loginUser = getUser(req)
   next()
 })
 
