@@ -1,4 +1,4 @@
-const { Restaurant, Category } = require('../models')
+const { Restaurant, Category, Comment, User } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const restaurantController = {
@@ -48,9 +48,15 @@ const restaurantController = {
   },
   getRestaurant: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, {
-      include: Category
+      // 預先加載 eager loading
+      // 項目變多時，需要改成用陣列
+      include: [
+        Category,
+        { model: Comment, include: User } // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
+      ]
     })
       .then(restaurant => {
+        // console.log(restaurant.Comments[0].dataValues)
         if (!restaurant) throw new Error("Restaurant didn't exist!")
         // console.log(restaurant.toJSON())
         // restaurant.increment 更新 viewCounts 的數值(+1)

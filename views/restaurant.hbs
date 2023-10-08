@@ -22,6 +22,17 @@
 </div>
 
 {{!-- Comment --}}
+<h3 class="mb-3">所有評論：</h3>
+{{#each restaurant.Comments}}
+<blockquote class="blockquote mb-0">
+  <h4><a href="/users/{{this.User.id}}">{{this.User.name}}</a></h4>
+  <p>{{this.text}}</p>
+  {{!--使用 relativeTimeFromNow 改成了相對時間 --}}
+  <footer class="blockquote-footer">{{relativeTimeFromNow this.createdAt}}</footer>
+</blockquote>
+<hr />
+{{/each}}
+
 <form action="/comments" method="POST">
   <div class="form-row mb-3">
     {{!-- 在 controller 裡想要用 req.body 取得表單內容時，後面接的屬性會對應到各個輸入框的 name 屬性 --}}
