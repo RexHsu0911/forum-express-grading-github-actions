@@ -37,9 +37,9 @@ app.use('/upload', express.static(path.join(__dirname, 'upload')))
 
 // 設定 flash message
 app.use((req, res, next) => {
+  // 把變數設放到 res.locals 裡，讓所有的 view 都能存取
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
-  // 讓所有的 view 都能存取 user
   res.locals.loginUser = getUser(req)
   next()
 })

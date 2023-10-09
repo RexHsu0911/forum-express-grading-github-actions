@@ -3,14 +3,14 @@ const fs = require('fs')
 
 const localFileHandler = file => { // file 是 multer 處理完的檔案
   return new Promise((resolve, reject) => {
-    // 檔案是否存在
+    // 檔案是否存在，若不存在，則回傳空值
     if (!file) return resolve(null)
 
-    // 把檔案複製一份到 upload 用來對外的資料夾底下
-    const fileName = `upload/${file.originalname}`
-    return fs.promises.readFile(file.path)
-      .then(data => fs.promises.writeFile(fileName, data))
-      .then(() => resolve(`/${fileName}`))
+    // 把檔案複製一份到 upload 資料夾底下
+    const fileName = `upload/${file.originalname}` // file.originalname 表示上傳的檔案的原始檔案名稱
+    return fs.promises.readFile(file.path) // fs.promises.readFile 用於非同步讀取文件的內容；file.path 表示伺服器上儲存上傳檔案的路徑
+      .then(data => fs.promises.writeFile(fileName, data)) // fs.promises.writeFile 用於非同步寫入文件的內容；data 為要寫入文件的數據
+      .then(() => resolve(`/${fileName}`)) // 回傳存儲檔案路徑
       .catch(err => reject(err))
   })
 }

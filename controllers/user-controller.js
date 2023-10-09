@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User } = require('../models')
+const { User, Comment, Restaurant } = require('../models')
 const { localFileHandler } = require('../helpers/file-helpers')
 
 const userController = {
@@ -44,10 +44,29 @@ const userController = {
   },
   getUser: (req, res, next) => {
     return User.findByPk(req.params.id, {
-      raw: true
+      include: {
+        model: Comment,
+        include: Restaurant
+      }
     })
       .then(user => {
         if (!user) throw new Error("User didn't exist!")
+
+        user = user.toJSON() // 簡化為 JSON 字串
+        console.log(user)
+
+        // 陣列 commentedRestaurants 為使用者已評論的餐廳(不重複)
+        // reduce 用於對陣列中的元素進行歸納、累加或轉換操作
+        // reduce 方法接受兩個參數，第一個參數是一個函數，用來處理陣列中的每一個元素，第二個參數是初始值(累加器)，這裡設定為一個空陣列 []
+        user.commentedRestaurants = user.Comments && user.Comments.reduce((acc, comment) => {
+          // acc (accumulator)為累加器，它用來儲存最終的結果
+          // 使用 some 方法檢查累加器中是否已經存在具有相同 restaurantId 的餐廳；如果不存在，則將該 Restaurant 添加 (push)到累加器中，並回傳更新後的累加器
+          if (!acc.some(restaurant => restaurant.id === comment.restaurantId)) {
+            acc.push(comment.Restaurant)
+          }
+          return acc
+        }, [])
+
         return res.render('users/profile', { user })
       })
       .catch(err => next(err))
@@ -64,7 +83,7 @@ const userController = {
   },
   putUser: (req, res, next) => {
     const { name } = req.body
-    // 編輯使用者是否為自己的資料
+    // 判斷編輯使用者是否為自己的資料
     if (req.user.id !== Number(req.params.id)) throw new Error('只能更改自己的資料！')
     if (!name) throw new Error('User name is required!')
 
