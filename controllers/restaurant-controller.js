@@ -35,12 +35,16 @@ const restaurantController = {
         // 取出使用者的收藏清單 map 成 id 清單
         const favoritedRestaurantsId = req.user && req.user.FavoritedRestaurants.map(fr => fr.id)
 
+        // 取出使用者的喜歡清單 map 成 id 清單
+        const likedRestaurantsId = req.user && req.user.LikedRestaurants.map(lr => lr.id)
+
         // 使用展開運算子（spread operator） ...r，將 r 的物件拷貝並做出做局部修改，在展開之後會出現兩個重複的 description，但當 key 重複時，會被後面出現的取代
         // console.log(restaurants)
         const data = restaurants.rows.map(r => ({
           ...r,
           description: r.description.substring(0, 50), // 將餐廳敘述文字（description）截為 50 個字
-          isFavorited: favoritedRestaurantsId.includes(r.id) // includes 方法進行比對 restaurants.id 是否有被使用者收藏，最後會回傳布林值
+          isFavorited: favoritedRestaurantsId.includes(r.id), // includes 方法進行比對 restaurants.id 是否有被使用者收藏，最後會回傳布林值
+          isLiked: likedRestaurantsId.includes(r.id) // 比對 restaurants.id 是否有被使用者喜歡
         }))
         // console.log(data)
         return res.render('restaurants', {
@@ -59,7 +63,8 @@ const restaurantController = {
       include: [
         Category,
         { model: Comment, include: User }, // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
-        { model: User, as: 'FavoritedUsers' }
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' }
       ],
       order: [
         [Comment, 'createdAt', 'DESC'] // 依 Comment 建立時間降冪排序(DESC)
@@ -73,14 +78,18 @@ const restaurantController = {
         return restaurant.increment('viewCounts')
       })
       .then(restaurant => {
-        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在收藏「這間餐廳的收藏使用者列表」裡面
+        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的收藏使用者列表」裡面
         // 使用 some 的好處是只要帶迭代過程中找到一個符合條件的項目後(若使用者 id 相符)，就會立刻回傳 true，後面的項目不會繼續執行
         // 比起 map 方法無論如何都會從頭到尾把陣列裡的項目執行一次，可以有效減少執行次數
         const isFavorited = restaurant.FavoritedUsers.some(fu => fu.id === req.user.id)
 
+        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的喜歡使用者列表」裡面
+        const isLiked = restaurant.LikedUsers.some(lu => lu.id === req.user.id)
+
         res.render('restaurant', {
           restaurant: restaurant.toJSON(),
-          isFavorited
+          isFavorited,
+          isLiked
         })
       })
       .catch(err => next(err))

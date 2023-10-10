@@ -49,6 +49,10 @@ router.post('/comments', authenticated, commentController.postComment)
 router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
 router.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 
+// like
+router.post('/like/:restaurantId', authenticated, userController.addLike)
+router.delete('/like/:restaurantId', authenticated, userController.removeLike)
+
 // 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
 router.use('/', (req, res) => res.redirect('/restaurants'))
 
