@@ -1,0 +1,75 @@
+{{> restaurant-tabs route='feeds'}}
+<h1>最新動態</h1>
+<hr />
+{{!-- 最近新增的餐廳 --}}
+<div class="row mt-5">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        最新餐廳
+      </div>
+      <div class="card-body">
+        {{#each restaurants}}
+        <div>
+          <div class="row">
+            <h4>
+              <a class="link-primary" href="/restaurants/{{this.id}}">{{this.name}}</a>
+              <small class="fs-6 px-2">
+                [<a class="link-primary" href="/restaurants?categoryId={{this.Category.id}}">{{this.Category.name}}</a>]
+              </small>
+              </a>
+            </h4>
+          </div>
+          <div class="row pt-3">
+            <a href="/restaurants/{{this.id}}">
+              <img class="card-img-top img-fluid" src="{{this.image}}" width="286px" height="180px"
+                style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+            </a>
+          </div>
+          {{!-- .text-truncate 使用刪節號截斷較長的字串 --}}
+          <p class="text-truncate my-4">{{this.description}}</p>
+          {{relativeTimeFromNow this.createdAt}}
+          <hr>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  {{!-- 最新的評論資料 --}}
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        最新評論
+      </div>
+      <div class="card-body">
+        {{#each comments}}
+        <div>
+          <h4>
+            <a class="link-primary" href="/restaurants/{{this.Restaurant.id}}">{{this.Restaurant.name}}</a>
+          </h4>
+          <div class="row py-3">
+            <div class="col-md-2">
+              {{#if this.user.image}}
+              <img src="{{this.user.image}}" width="60px" height="60px" style="transition: opacity 0.5s; opacity:0;"
+                onload="this.style.opacity=1;" />
+              {{else}}
+              {{!-- 預設 user 大頭貼 --}}
+              <img src="https://via.placeholder.com/60" width="60px" height="60px"
+                style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;" />
+              {{/if}}
+            </div>
+            <div class="col-md-10 px-4">
+              {{!-- style="white-space: break-spaces;" 允許文本在空格處自動換行 --}}
+              <p style="white-space: break-spaces;">{{this.text}}</p>
+            </div>
+          </div>
+          - <a class="link-secondary" href="/users/{{this.User.id}}">{{this.User.name}}</a>
+          <small>at {{relativeTimeFromNow this.createdAt}}</small>
+          <hr>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
