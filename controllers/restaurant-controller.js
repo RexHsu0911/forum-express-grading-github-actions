@@ -30,11 +30,17 @@ const restaurantController = {
     Category.findAll({ raw: true }) // Category table 撈出全部的類別資料
     ])
       .then(([restaurants, categories]) => {
+        // 在輸出餐廳列表時，「現在這間餐廳」是否有出現在「使用者的收藏清單」裡面
+        // && 且，回傳第一個是 falsy 的值，若全部皆為 truthy，則回傳最後一個值(前面的式子為 falsy，就不會繼續判斷後面的)(req.user 有可能是空的)
+        // 取出使用者的收藏清單 map 成 id 清單
+        const favoritedRestaurantsId = req.user && req.user.FavoritedRestaurants.map(fr => fr.id)
+
         // 使用展開運算子（spread operator） ...r，將 r 的物件拷貝並做出做局部修改，在展開之後會出現兩個重複的 description，但當 key 重複時，會被後面出現的取代
         // console.log(restaurants)
         const data = restaurants.rows.map(r => ({
           ...r,
-          description: r.description.substring(0, 50) // 將餐廳敘述文字（description）截為 50 個字
+          description: r.description.substring(0, 50), // 將餐廳敘述文字（description）截為 50 個字
+          isFavorited: favoritedRestaurantsId.includes(r.id) // includes 方法進行比對 restaurants.id 是否有被使用者收藏，最後會回傳布林值
         }))
         // console.log(data)
         return res.render('restaurants', {
@@ -52,10 +58,8 @@ const restaurantController = {
       // 項目變多時，需要改成用陣列
       include: [
         Category,
-        {
-          model: Comment,
-          include: User // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
-        }
+        { model: Comment, include: User }, // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
+        { model: User, as: 'FavoritedUsers' }
       ],
       order: [
         [Comment, 'createdAt', 'DESC'] // 依 Comment 建立時間降冪排序(DESC)
@@ -69,7 +73,15 @@ const restaurantController = {
         return restaurant.increment('viewCounts')
       })
       .then(restaurant => {
-        res.render('restaurant', { restaurant: restaurant.toJSON() })
+        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在收藏「這間餐廳的收藏使用者列表」裡面
+        // 使用 some 的好處是只要帶迭代過程中找到一個符合條件的項目後(若使用者 id 相符)，就會立刻回傳 true，後面的項目不會繼續執行
+        // 比起 map 方法無論如何都會從頭到尾把陣列裡的項目執行一次，可以有效減少執行次數
+        const isFavorited = restaurant.FavoritedUsers.some(fu => fu.id === req.user.id)
+
+        res.render('restaurant', {
+          restaurant: restaurant.toJSON(),
+          isFavorited
+        })
       })
       .catch(err => next(err))
   },
