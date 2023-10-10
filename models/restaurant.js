@@ -10,8 +10,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate (models) {
+      // belongsTo 設定多對一關聯
       Restaurant.belongsTo(models.Category, { foreignKey: 'categoryId' })
+      // hasMany 設定一對多關聯
       Restaurant.hasMany(models.Comment, { foreignKey: 'restaurantId' })
+      // belongsToMany 設定多對多關聯
+      Restaurant.belongsToMany(models.User, {
+        through: models.Favorite, // 透過 Favorite 表來建立關聯
+        foreignKey: 'restaurantId', // 對 Favorite 表設定 FK
+        as: 'FavoritedUsers' // 幫這個關聯取個別名
+      })
     }
   };
   Restaurant.init({
