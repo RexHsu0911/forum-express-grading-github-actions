@@ -3,11 +3,11 @@
 <hr />
 <div class="d-flex flex-column align-items-center">
   {{#each restaurants}}
-  <div class="card mb-3 h-100 m-1" style="max-width: 540px;break-inside: avoid;">
+  <div class="card col-12 mb-3 h-100 m-1" style="break-inside: avoid;">
     <div class="row no-gutters">
-      <div class="col-md-4">
+      <div class="col-md-4 align-self-center">
         <a href="/restaurants/{{this.id}}">
-          <img class="card-img img-fluid" src="{{this.image}}" style="transition: opacity 0.5s; opacity:0;"
+          <img class="card-img img-fluid" src="{{this.image}}" width="286px" height="180px" style="transition: opacity 0.5s; opacity:0;"
             onload="this.style.opacity=1;">
         </a>
       </div>

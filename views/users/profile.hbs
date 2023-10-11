@@ -14,14 +14,26 @@
       <div class="card-body">
         <h5 class="card-title">{{user.name}}</h5>
         <p class="card-text">{{user.email}}</p>
+        <div class="card-text">
+          <strong>{{user.commentedRestaurants.length}}</strong> 已評論餐廳
+        </div>
+        <div class="card-text">
+          <strong>{{user.FavoritedRestaurants.length}}</strong> 已收藏餐廳
+        </div>
+        <div class="card-text">
+          <strong>{{user.Followings.length}}</strong> followings (追蹤者)
+        </div>
         <div class="card-text mb-5">
-          <strong>{{user.commentedRestaurants.length}}</strong>已評論餐廳
+          <strong>{{user.Followers.length}}</strong> followers (追隨者)
         </div>
         {{!-- 使用者只能編輯自己的資料 --}}
         {{#ifCond loginUser.id user.id}}
         <a class="btn btn-primary" href="/users/{{user.id}}/edit">
           Edit
         </a>
+        <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+        {{else}}
+        <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
         {{/ifCond}}
       </div>
     </div>
@@ -29,18 +41,68 @@
 </div>
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-4">
+    {{!-- Followings --}}
     <br />
     <div class="card">
       <div class="card-header">
-        <strong>{{user.commentedRestaurants.length}}</strong>已評論餐廳
+        <strong>{{user.Followings.length}}</strong> followings (追蹤者)
+      </div>
+      <div class="card-body">
+        {{#each user.Followings}}
+        <a href="/restaurants/{{this.id}}" class="text-decoration-none">
+          {{!-- 當元素被加載到網頁中時，觸發 onload 事件，它最初是不可見的（不透明度 opacity 為 0），然後透過 CSS 過渡(transition)效果 ，透明度平滑地在 0.5 秒內從 0 增加到
+          1，使元素淡入可見（不透明度 opacity 為 1） --}}
+          <img src="{{this.image}}" width="60" height="60" class="avatar m-1"
+            style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;" />
+        </a>
+        {{/each}}
+      </div>
+    </div>
+    {{!-- Followers --}}
+    <br />
+    <div class="card">
+      <div class="card-header">
+        <strong>{{user.Followers.length}}</strong> followers (追隨者)
+      </div>
+      <div class="card-body">
+        {{#each user.Followers}}
+        <a href="/restaurants/{{this.id}}" class="text-decoration-none">
+          <img src="{{this.image}}" width="60" height="60" class="avatar m-1"
+            style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;" />
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    {{!-- commentedRestaurants --}}
+    <br />
+    <div class="card">
+      <div class="card-header">
+        <strong>{{user.commentedRestaurants.length}}</strong> 已評論餐廳
       </div>
       <div class="card-body">
         {{#each user.commentedRestaurants}}
         <a href="/restaurants/{{this.id}}" class="text-decoration-none">
-          {{!-- 當元素被加載到網頁中時，觸發 onload 事件，它最初是不可見的（不透明度 opacity 為 0），然後透過 CSS 過渡(transition)效果 ，透明度平滑地在 0.5 秒內從 0 增加到 1，使元素淡入可見（不透明度 opacity 為 1） --}}
-          <img src="{{this.image}}" width="60" height="60" class="avatar m-1" style="transition: opacity 0.5s; opacity:0;"
-            onload="this.style.opacity=1;" />
+          <img src="{{this.image}}" width="60" height="60" class="avatar m-1"
+            style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;" />
+        </a>
+        {{/each}}
+      </div>
+    </div>
+    {{!-- FavoritedRestaurants --}}
+    <br />
+    <div class="card">
+      <div class="card-header">
+        <strong>{{user.FavoritedRestaurants.length}}</strong> 已評論餐廳
+      </div>
+      <div class="card-body">
+        {{#each user.FavoritedRestaurants}}
+        <a href="/restaurants/{{this.id}}" class="text-decoration-none">
+          <img src="{{this.image}}" width="60" height="60" class="avatar m-1"
+            style="transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;" />
         </a>
         {{/each}}
       </div>

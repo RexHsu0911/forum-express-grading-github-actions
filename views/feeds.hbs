@@ -50,9 +50,11 @@
           </h4>
           <div class="row py-3">
             <div class="col-md-2">
-              {{#if this.user.image}}
-              <img src="{{this.user.image}}" width="60px" height="60px" style="transition: opacity 0.5s; opacity:0;"
-                onload="this.style.opacity=1;" />
+              {{#if this.User.image}}
+              <a href="/users/{{this.User.id}}">
+                <img src="{{this.User.image}}" width="60px" height="60px" style="transition: opacity 0.5s; opacity:0;"
+                  onload="this.style.opacity=1;" />
+              </a>
               {{else}}
               {{!-- 預設 user 大頭貼 --}}
               <img src="https://via.placeholder.com/60" width="60px" height="60px"
