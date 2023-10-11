@@ -55,6 +55,10 @@ router.delete('/favorite/:restaurantId', authenticated, userController.removeFav
 router.post('/like/:restaurantId', authenticated, userController.addLike)
 router.delete('/like/:restaurantId', authenticated, userController.removeLike)
 
+// followship
+router.post('/following/:userId', authenticated, userController.addFollowing)
+router.delete('/following/:userId', authenticated, userController.removeFollowing)
+
 // 設定 fallback 路由(所有路由條件都不符合時，則最終會通過的路由)，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
 router.use('/', (req, res) => res.redirect('/restaurants'))
 
