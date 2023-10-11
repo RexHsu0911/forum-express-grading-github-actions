@@ -37,7 +37,9 @@ passport.deserializeUser((id, cb) => {
   User.findByPk(id, {
     include: [
       { model: Restaurant, as: 'FavoritedRestaurants' }, // 在 include 的時候有追加 as 來標明我們想要引入的關係(從使用者資料中取出其收藏的餐廳)
-      { model: Restaurant, as: 'LikedRestaurants' } // 從使用者資料中取出其喜歡的餐廳
+      { model: Restaurant, as: 'LikedRestaurants' }, // 從使用者資料中取出其喜歡的餐廳
+      { model: User, as: 'Followers' }, // 取出 User 的追蹤者
+      { model: User, as: 'Followings' } // 取出 User 追蹤中的 User
     ]
   })
     // toJSON() 將 Sequelize 打包後的物件(可以直接透過 Sequelize 操作這筆資料)，簡化為 JSON 字串

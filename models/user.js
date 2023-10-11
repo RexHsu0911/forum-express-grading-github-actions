@@ -21,6 +21,18 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'LikedRestaurants'
       })
+      // User 的追蹤者(找出哪些使用者在追蹤(followingId)這個使用者)
+      User.belongsToMany(models.User, {
+        through: models.Followship,
+        foreingKey: 'followingId',
+        as: 'Followers'
+      })
+      // User 追蹤中的 User(找出這個使用者追蹤了(followerId)哪些使用者)
+      User.belongsToMany(models.User, {
+        through: models.Followship,
+        foreingKey: 'followerId',
+        as: 'Followings'
+      })
     }
   };
   // 定義欄位
