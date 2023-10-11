@@ -202,7 +202,7 @@ const userController = {
             // 計算追蹤者人數
             followerCount: user.Followers.length,
             // 判斷目前登入使用者是否已追蹤該 user 的物件
-            isFollowed: req.user.Followings.some(f => f.id === user.id)
+            isFollowed: req.user && req.user.Followings.some(f => f.id === user.id)
           }))
           // 根據 followerCount 使用 sort 排序 user 由大排到小
           // 若(a > b)，回傳小於 0 的數字(相當於 b - a 為負數) -> 排序為[a, b]
