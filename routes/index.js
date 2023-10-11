@@ -29,6 +29,8 @@ router.post('/signin', passport.authenticate('local', { failureRedirect: '/signi
 // logout
 router.get('/logout', userController.logout)
 // users
+// 要放在 GET /users/:id 的前面，不然 /users/top 會被優先用 /users/:id 的結構來解析
+router.get('/users/top', authenticated, userController.getTopUsers)
 router.get('/users/:id/edit', authenticated, userController.editUser)
 router.get('/users/:id', authenticated, userController.getUser)
 router.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
@@ -53,7 +55,7 @@ router.delete('/favorite/:restaurantId', authenticated, userController.removeFav
 router.post('/like/:restaurantId', authenticated, userController.addLike)
 router.delete('/like/:restaurantId', authenticated, userController.removeLike)
 
-// 設定 fallback 路由，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
+// 設定 fallback 路由(所有路由條件都不符合時，則最終會通過的路由)，router.use 在任何HTTP請求方法（GET、POST、PUT等）都能執行
 router.use('/', (req, res) => res.redirect('/restaurants'))
 
 router.use('/', generalErrorHandler)
