@@ -10,7 +10,7 @@ const passport = require('./config/passport')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
 const { getUser } = require('./helpers/auth-helpers')
 
-const { pages } = require('./routes')
+const { pages, apis } = require('./routes')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -44,6 +44,8 @@ app.use((req, res, next) => {
   next()
 })
 
+// 路徑多了 api 字串要比對，需要在 app.use(pages) 的前面
+app.use('/api', apis)
 app.use(pages)
 
 app.listen(port, () => {
