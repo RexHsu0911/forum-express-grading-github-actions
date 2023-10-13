@@ -1,4 +1,4 @@
-const { Comment, User, Restaurant } = require('../models')
+const { Comment, User, Restaurant } = require('../../models')
 const commentController = {
   postComment: (req, res, next) => {
     // 從 req 中取出表單發送過來的 text、restaurantId 及 userId 資料

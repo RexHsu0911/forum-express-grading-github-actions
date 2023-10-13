@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, Restaurant, Favorite, Like, Followship } = require('../models')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { User, Comment, Restaurant, Favorite, Like, Followship } = require('../../models')
+const { localFileHandler } = require('../../helpers/file-helpers')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -58,7 +58,7 @@ const userController = {
       .then(user => {
         if (!user) throw new Error("User didn't exist!")
         user = user.toJSON() // 簡化為 JSON 字串
-        console.log(user)
+        // console.log(user)
 
         // 陣列 commentedRestaurants 為使用者已評論的餐廳(不重複)
         // reduce 用於對陣列中的元素進行歸納、累加或轉換操作

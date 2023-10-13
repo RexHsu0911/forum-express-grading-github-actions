@@ -1,5 +1,5 @@
-const { Restaurant, Category, Comment, User } = require('../models')
-const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { Restaurant, Category, Comment, User } = require('../../models')
+const { getOffset, getPagination } = require('../../helpers/pagination-helper')
 
 const restaurantController = {
   getRestaurants: (req, res, next) => {
@@ -141,7 +141,7 @@ const restaurantController = {
       }]
     })
       .then(restaurants => {
-        console.log(restaurants)
+        // console.log(restaurants)
         // 整理 restaurants 資料，把每個 restaurant 項目都拿出來處理一次，並把新陣列儲存在 restaurants 裡
         const result = restaurants
           .map(restaurant => ({

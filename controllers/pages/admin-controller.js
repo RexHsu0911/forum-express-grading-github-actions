@@ -1,8 +1,8 @@
 // 等同於 const db = require('../models')
 // const Restaurant = db.Restaurant
 // 採用解構賦值的寫法
-const { Restaurant, User, Category } = require('../models')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { Restaurant, User, Category } = require('../../models')
+const { localFileHandler } = require('../../helpers/file-helpers')
 
 const adminController = {
   getRestaurants: (req, res, next) => {
