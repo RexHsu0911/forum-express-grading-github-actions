@@ -1,3 +1,4 @@
+const adminServices = require('../../services/admin-services')
 // 等同於 const db = require('../models')
 // const Restaurant = db.Restaurant
 // 採用解構賦值的寫法
@@ -6,17 +7,7 @@ const { localFileHandler } = require('../../helpers/file-helpers')
 
 const adminController = {
   getRestaurants: (req, res, next) => {
-    return Restaurant.findAll({
-      // {raw: true} 把 Sequelize 包裝過的一大包物件轉換成格式比較單純的 JS 原生物件
-      raw: true,
-      nest: true, // {nest: true} 把資料整理成比較容易取用的結構
-      include: [Category] // include 取得關聯資料 Category
-    })
-      .then(restaurants => {
-        res.render('admin/restaurants', { restaurants })
-        // console.log('restaurants', restaurants)
-      })
-      .catch(err => next(err))
+    adminServices.getRestaurants(req, (err, data) => err ? next(err) : res.render('admin/restaurants', data))
   },
   createRestaurant: (req, res, next) => {
     // 去拿 Category table 裡面的所有資料，才有全部類別可以選
