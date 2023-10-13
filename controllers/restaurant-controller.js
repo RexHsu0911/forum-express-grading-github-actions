@@ -98,7 +98,8 @@ const restaurantController = {
     return Restaurant.findByPk(req.params.id, {
       include: [
         Category,
-        Comment
+        Comment,
+        { model: User, as: 'FavoritedUsers' }
       ]
       // {nest: true, raw: true} 可能會破壞一對多關聯
     })
