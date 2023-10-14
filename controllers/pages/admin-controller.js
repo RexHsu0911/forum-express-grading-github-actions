@@ -18,27 +18,12 @@ const adminController = {
       .catch(err => next(err))
   },
   postRestaurant: (req, res, next) => {
-    const { name, tel, address, openingHours, description, categoryId } = req.body // 從 req.body 拿出表單裡(input 標籤的 name 屬性是 HTTP 傳輸時的資料名稱)的資料
-    // console.log(req.body)
-    // 雖然在前端 HTML 標籤上已加上 required，但在後端拿到資料以後，還是要再做一次這個檢查，確保一定有拿到 name 這個資料，再存入資料庫
-    if (!name) throw new Error('Restaurant name is required!') // name 是必填，若發先是空值就會終止程式碼，並在畫面顯示錯誤提示
-    const { file } = req // 把檔案取出來，也可以寫成 const file = req.file
-    return localFileHandler(file) // 把取出的檔案傳給 file-helper 處理後
-      .then(filePath => Restaurant.create({ // 產生一個新的 Restaurant 物件實例，並存入資料庫
-        name,
-        tel,
-        address,
-        openingHours,
-        description,
-        // 如果 filePath 的值為檔案路徑字串 (使用者有上傳檔案，就會被判斷為 Truthy)，就將 image 的值設為檔案路徑，反之為 null
-        image: filePath || null,
-        categoryId // 提交該餐廳的 category 資訊
-      }))
-      .then(() => {
-        req.flash('success_messages', 'restaurant was successfully created') // 在畫面顯示成功提示
-        res.redirect('/admin/restaurants') // 新增完成後導回後台首頁
-      })
-      .catch(err => next(err))
+    adminServices.postRestaurant(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', 'restaurant was successfully created') // 在畫面顯示成功提示
+      req.session.createdData = data
+      return res.redirect('/admin/restaurants') // 新增完成後導回後台首頁
+    })
   },
   getRestaurant: (req, res, next) => {
     // req.params.id 則是對應到路由傳過來的參數(/:id)
