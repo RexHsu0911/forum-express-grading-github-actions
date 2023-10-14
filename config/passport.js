@@ -1,7 +1,14 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
+const passportJWT = require('passport-jwt')
 const bcrypt = require('bcryptjs')
+
 const { User, Restaurant } = require('../models')
+
+// 解析 JWT token
+const JWTStrategy = passportJWT.Strategy
+// 提取 JWT token
+const ExtractJWT = passportJWT.ExtractJwt
 
 // set up Passport strategy
 passport.use(new LocalStrategy(
@@ -29,6 +36,30 @@ passport.use(new LocalStrategy(
       })
   }
 ))
+
+// JWT 身份認證的設定選項
+const jwtOptions = {
+  // jwtFromRequest 設定去 authorization header 裡的 bearer 項目 提取 token
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  // secretOrKey 使用密鑰來檢查 token 是否經過纂改
+  secretOrKey: process.env.JWT_SECRET
+}
+
+// 設定 Passport-jwt 策略(身份認證)
+// 根據 jwtOptions 裡的資訊解開 token(做 /signin 時已經把使用者資料放進 payload)，運用 jwtPayload.id 去 User table 裡找出使用者並回傳
+passport.use(new JWTStrategy(jwtOptions, (jwtPayload, cb) => {
+  User.findByPk(jwtPayload.id, {
+    include: [
+      { model: Restaurant, as: 'FavoritedRestaurants' },
+      { model: Restaurant, as: 'LikedRestaurants' },
+      { model: User, as: 'Followers' },
+      { model: User, as: 'Followings' }
+    ]
+  })
+    .then(user => cb(null, user))
+    .catch(err => cb(err))
+}))
+
 // 序列化 serialize(只存 user id) and 反序列化 deserialize user(透過 user id，把整個 user 物件實例拿出來)
 passport.serializeUser((user, cb) => {
   cb(null, user.id)

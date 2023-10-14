@@ -1,4 +1,5 @@
 // 呼叫取用 dotenv 設定檔
+// 要讓 dotenv 在 passport 之前被載入，否則 .env 裡的設定(secret)會讀取不到
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
