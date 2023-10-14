@@ -1,13 +1,21 @@
 const express = require('express')
 const router = express.Router()
 
+const passport = require('../../config/passport')
+
 const admin = require('./modules/admin')
 
 const restaurantController = require('../../controllers/apis/restaurant-controller')
+const userController = require('../../controllers/apis/user-controller')
 
 const { apiErrorHandler } = require('../../middleware/error-handler')
 
 router.use('/admin', admin)
+
+// passport.authenticate() 指定了 Passport 的驗證策略
+// 'local' 用帳號密碼來做驗證
+// 設定關掉 sessions(不用 cookie-based 做驗證了，也就不需要 Passport 幫我們建立 session)
+router.post('/signin', passport.authenticate('local', { session: false }), userController.signIn)
 
 router.get('/restaurants', restaurantController.getRestaurants)
 

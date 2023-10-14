@@ -1,3 +1,8 @@
+// 呼叫取用 dotenv 設定檔
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 // path 套件跟 fs 一樣都是 node.js 的原生模組，在處理跟檔案有關的事情
 const path = require('path')
 

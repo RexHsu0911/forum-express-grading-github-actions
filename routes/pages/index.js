@@ -25,6 +25,7 @@ router.post('/signup', userController.signUp)
 // signin
 router.get('/signin', userController.signInPage)
 // 請 Passport 直接做身分驗證
+// 驗證失敗後，重新導向 signin 頁面、傳送 flash message
 router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
 // logout
 router.get('/logout', userController.logout)
