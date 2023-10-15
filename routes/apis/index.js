@@ -18,6 +18,7 @@ const { apiErrorHandler } = require('../../middleware/error-handler')
 router.use('/admin', authenticated, authenticatedAdmin, admin)
 
 // users
+router.get('/users/top', authenticated, userController.getTopUsers)
 router.get('/users/:id', authenticated, userController.getUser)
 router.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
 
