@@ -16,6 +16,7 @@ const { apiErrorHandler } = require('../../middleware/error-handler')
 router.use('/admin', authenticated, authenticatedAdmin, admin)
 
 // restaurants
+router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
 // signup

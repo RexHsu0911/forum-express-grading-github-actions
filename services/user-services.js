@@ -1,6 +1,5 @@
 const { User } = require('../models')
 const bcrypt = require('bcryptjs')
-// const { localFileHandler } = require('../../helpers/file-helpers')
 
 const userServices = {
   signUp: (req, cb) => {

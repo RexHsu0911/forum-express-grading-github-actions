@@ -6,7 +6,10 @@ const restaurantController = {
   getRestaurants: (req, res, next) => {
     // callback function 若沒有 error ，則取得資料(data)並回傳 JSON
     // res.json 要回應的內容是 JSON 格式的資料
-    restaurantServices.getRestaurants(req, (err, data) => err ? next(err) : res.json(data))
+    restaurantServices.getRestaurants(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
+  getRestaurant: (req, res, next) => {
+    restaurantServices.getRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'seccess', data }))
   }
 }
 

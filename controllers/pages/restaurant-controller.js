@@ -6,42 +6,7 @@ const restaurantController = {
     restaurantServices.getRestaurants(req, (err, data) => err ? next(err) : res.render('restaurants', data))
   },
   getRestaurant: (req, res, next) => {
-    return Restaurant.findByPk(req.params.id, {
-      // 預先加載 eager loading
-      // 項目變多時，需要改成用陣列
-      include: [
-        Category,
-        { model: Comment, include: User }, // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
-        { model: User, as: 'FavoritedUsers' },
-        { model: User, as: 'LikedUsers' }
-      ],
-      order: [
-        [Comment, 'createdAt', 'DESC'] // 依 Comment 建立時間降冪排序(DESC)
-      ]
-    })
-      .then(restaurant => {
-        // console.log(restaurant.Comments[0].dataValues)
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        // console.log(restaurant.toJSON())
-        // restaurant.increment 更新 viewCounts 的數值(+1)
-        return restaurant.increment('viewCounts')
-      })
-      .then(restaurant => {
-        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的收藏使用者列表」裡面
-        // 使用 some 的好處是只要帶迭代過程中找到一個符合條件的項目後(若使用者 id 相符)，就會立刻回傳 true，後面的項目不會繼續執行
-        // 比起 map 方法無論如何都會從頭到尾把陣列裡的項目執行一次，可以有效減少執行次數
-        const isFavorited = restaurant.FavoritedUsers.some(fu => fu.id === req.user.id)
-
-        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的喜歡使用者列表」裡面
-        const isLiked = restaurant.LikedUsers.some(lu => lu.id === req.user.id)
-
-        res.render('restaurant', {
-          restaurant: restaurant.toJSON(),
-          isFavorited,
-          isLiked
-        })
-      })
-      .catch(err => next(err))
+    restaurantServices.getRestaurant(req, (err, data) => err ? next(err) : res.render('restaurant', data))
   },
   getDashboard: (req, res, next) => {
     return Restaurant.findByPk(req.params.id, {
@@ -50,7 +15,7 @@ const restaurantController = {
         Comment,
         { model: User, as: 'FavoritedUsers' }
       ]
-      // {nest: true, raw: true} 可能會破壞一對多關聯
+    // {nest: true, raw: true} 可能會破壞一對多關聯
     })
       .then(restaurant => {
         // console.log(restaurant.toJSON())

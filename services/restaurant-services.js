@@ -1,5 +1,5 @@
 // 一般的 controller 和 API 的 controller 只是在回傳格式有差異，把「沒有差異」的部分抽取可以共用的 function 至 services 層
-const { Restaurant, Category } = require('../models')
+const { Restaurant, Category, Comment, User } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const restaurantServices = {
@@ -52,6 +52,44 @@ const restaurantServices = {
           categories,
           categoryId,
           pagination: getPagination(limit, page, restaurants.count) // 把 pagination 資料傳回樣板
+        })
+      })
+      .catch(err => cb(err))
+  },
+  getRestaurant: (req, cb) => {
+    return Restaurant.findByPk(req.params.id, {
+      // 預先加載 eager loading
+      // 項目變多時，需要改成用陣列
+      include: [
+        Category,
+        { model: Comment, include: User }, // 要拿到 Restaurant 關聯的 Comment，再拿到 Comment 關聯的 User，要做兩次的查詢
+        { model: User, as: 'FavoritedUsers' },
+        { model: User, as: 'LikedUsers' }
+      ],
+      order: [
+        [Comment, 'createdAt', 'DESC'] // 依 Comment 建立時間降冪排序(DESC)
+      ]
+    })
+      .then(restaurant => {
+        // console.log(restaurant.Comments[0].dataValues)
+        if (!restaurant) throw new Error("restaurant didn't exist!")
+        // console.log(restaurant.toJSON())
+        // restaurant.increment 更新 viewCounts 的數值(+1)
+        return restaurant.increment('viewCounts')
+      })
+      .then(restaurant => {
+        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的收藏使用者列表」裡面
+        // 使用 some 的好處是只要帶迭代過程中找到一個符合條件的項目後(若使用者 id 相符)，就會立刻回傳 true，後面的項目不會繼續執行
+        // 比起 map 方法無論如何都會從頭到尾把陣列裡的項目執行一次，可以有效減少執行次數
+        const isFavorited = restaurant.FavoritedUsers.some(fu => fu.id === req.user.id)
+
+        // 處理單一餐廳時，檢查「現在的使用者」是否有出現在「這間餐廳的喜歡使用者列表」裡面
+        const isLiked = restaurant.LikedUsers.some(lu => lu.id === req.user.id)
+
+        return cb(null, {
+          restaurant: restaurant.toJSON(),
+          isFavorited,
+          isLiked
         })
       })
       .catch(err => cb(err))
