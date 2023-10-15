@@ -7,6 +7,7 @@ const admin = require('./modules/admin')
 
 const restaurantController = require('../../controllers/apis/restaurant-controller')
 const userController = require('../../controllers/apis/user-controller')
+const commentController = require('../../controllers/apis/comment-controller')
 
 const upload = require('../../middleware/multer')
 
@@ -28,6 +29,11 @@ router.get('/restaurants/feeds', authenticated, restaurantController.getFeeds)
 router.get('/restaurants/:id/dashboard', authenticated, restaurantController.getDashboard)
 router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
+
+// comments
+// 記得兩個驗證都要掛
+router.delete('/comments/:id', authenticated, authenticatedAdmin, commentController.deleteComment)
+router.post('/comments', authenticated, commentController.postComment)
 
 // favorite
 router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)

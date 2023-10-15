@@ -1,38 +1,22 @@
-const { Comment, User, Restaurant } = require('../../models')
+const commentServices = require('../../services/comment-services')
+
 const commentController = {
   postComment: (req, res, next) => {
-    // 從 req 中取出表單發送過來的 text、restaurantId 及 userId 資料
-    const { restaurantId, text } = req.body
-    const userId = req.user.id
-    if (!text) throw new Error('Comment text is required!')
-
-    return Promise.all([
-      User.findByPk(userId),
-      Restaurant.findByPk(restaurantId)
-    ])
-      .then(([user, restaurant]) => {
-        if (!user) throw new Error("User didn't exist!")
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-
-        return Comment.create({
-          text,
-          restaurantId,
-          userId
-        })
-      })
-      .then(() => {
-        res.redirect(`/restaurants/${restaurantId}`)
-      })
-      .catch(err => next(err))
+    commentServices.postComment(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', '使用者資料編輯成功')
+      req.session.createdComment = data
+      // console.log(data.comment.restaurantId)
+      return res.redirect(`/restaurants/${data.comment.restaurantId}`)
+    })
   },
   deleteComment: (req, res, next) => {
-    return Comment.findByPk(req.params.id)
-      .then(comment => {
-        if (!comment) throw new Error("Comment didn't exist!")
-        return comment.destroy()
-      })
-      .then(deletedComment => res.redirect(`/restaurants/${deletedComment.restaurantId}`))
-      .catch(err => next(err))
+    commentServices.deleteComment(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', '使用者資料編輯成功')
+      req.session.deletedComment = data
+      return res.redirect(`/restaurants/${data.comment.restaurantId}`)
+    })
   }
 }
 module.exports = commentController
