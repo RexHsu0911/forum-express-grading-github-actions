@@ -1,4 +1,4 @@
-const { User, Restaurant, Like, Followship } = require('../../models')
+const { User, Followship } = require('../../models')
 const userServices = require('../../services/user-services')
 
 const userController = {
@@ -62,45 +62,18 @@ const userController = {
     })
   },
   addLike: (req, res, next) => {
-    const { restaurantId } = req.params
-    return Promise.all([
-      Restaurant.findByPk(restaurantId), // 要收藏的這家餐廳是否存在？
-      Like.findOne({ // 確認這個喜歡的關聯是否存在？
-        where: {
-          userId: req.user.id,
-          restaurantId
-        }
-      })
-    ])
-      .then(([restaurant, like]) => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        // 是否已存在喜歡
-        if (like) throw new Error('You have liked this restaurant!')
-
-        return Like.create({
-          userId: req.user.id,
-          restaurantId
-        })
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addLike(req, (err, data) => {
+      if (err) return next(err)
+      req.session.addLike = data
+      return res.redirect('back')
+    })
   },
   removeLike: (req, res, next) => {
-    const { restaurantId } = req.params
-    return Like.findOne({
-      where: {
-        userId: req.user.id,
-        restaurantId
-      }
+    userServices.removeLike(req, (err, data) => {
+      if (err) return next(err)
+      req.session.removeLike = data
+      return res.redirect('back')
     })
-      .then(like => {
-        // 是否存在喜歡
-        if (!like) throw new Error("You haven't liked this restaurant!")
-
-        return like.destroy()
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
   },
   getTopUsers: (req, res, next) => {
     // 撈出所有 User 與 followers 資料

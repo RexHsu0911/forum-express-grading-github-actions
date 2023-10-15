@@ -1,4 +1,4 @@
-const { User, Comment, Restaurant, Favorite } = require('../models')
+const { User, Comment, Restaurant, Favorite, Like } = require('../models')
 const bcrypt = require('bcryptjs')
 const { localFileHandler } = require('../helpers/file-helpers')
 
@@ -118,6 +118,47 @@ const userServices = {
         return favorite.destroy()
       })
       .then(removeFavorite => cb(null, { favorite: removeFavorite }))
+      .catch(err => cb(err))
+  },
+  addLike: (req, cb) => {
+    const { restaurantId } = req.params
+    return Promise.all([
+      Restaurant.findByPk(restaurantId), // 要收藏的這家餐廳是否存在？
+      Like.findOne({ // 確認這個喜歡的關聯是否存在？
+        where: {
+          userId: req.user.id,
+          restaurantId
+        }
+      })
+    ])
+      .then(([restaurant, like]) => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        // 是否已存在喜歡
+        if (like) throw new Error('You have liked this restaurant!')
+
+        return Like.create({
+          userId: req.user.id,
+          restaurantId
+        })
+      })
+      .then(addLike => cb(null, { like: addLike }))
+      .catch(err => cb(err))
+  },
+  removeLike: (req, cb) => {
+    const { restaurantId } = req.params
+    return Like.findOne({
+      where: {
+        userId: req.user.id,
+        restaurantId
+      }
+    })
+      .then(like => {
+        // 是否存在喜歡
+        if (!like) throw new Error("You haven't liked this restaurant!")
+
+        return like.destroy()
+      })
+      .then(removeLike => cb(null, { like: removeLike }))
       .catch(err => cb(err))
   }
 }
