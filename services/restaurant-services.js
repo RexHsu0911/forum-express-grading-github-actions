@@ -109,6 +109,29 @@ const restaurantServices = {
         return cb(null, { restaurant: restaurant.toJSON() })
       })
       .catch(err => cb(err))
+  },
+  getFeeds: (req, cb) => {
+    return Promise.all([
+      Restaurant.findAll({
+        limit: 10,
+        // order 寫成陣列可以指定使用多個排序條件，例如 order: [['createdAt', 'DESC'], ['id', 'ASC']]，當第一個條件相同時就會按照第二個條件來排
+        order: [['createdAt', 'DESC']], // DESC (descending)降冪排序；而 ASC (ascending)升冪排序
+        include: [Category],
+        raw: true,
+        nest: true
+      }),
+      Comment.findAll({
+        limit: 10,
+        order: [['createdAt', 'DESC']],
+        include: [User, Restaurant],
+        raw: true,
+        nest: true
+      })
+    ])
+      .then(([restaurants, comments]) => {
+        cb(null, { restaurants, comments })
+      })
+      .catch(err => cb(err))
   }
 }
 

@@ -1,4 +1,4 @@
-const { Restaurant, Category, Comment, User } = require('../../models')
+const { Restaurant, User } = require('../../models')
 const restaurantServices = require('../../services/restaurant-services')
 
 const restaurantController = {
@@ -12,27 +12,7 @@ const restaurantController = {
     restaurantServices.getDashboard(req, (err, data) => err ? next(err) : res.render('dashboard', data))
   },
   getFeeds: (req, res, next) => {
-    return Promise.all([
-      Restaurant.findAll({
-        limit: 10,
-        // order 寫成陣列可以指定使用多個排序條件，例如 order: [['createdAt', 'DESC'], ['id', 'ASC']]，當第一個條件相同時就會按照第二個條件來排
-        order: [['createdAt', 'DESC']], // DESC (descending)降冪排序；而 ASC (ascending)升冪排序
-        include: [Category],
-        raw: true,
-        nest: true
-      }),
-      Comment.findAll({
-        limit: 10,
-        order: [['createdAt', 'DESC']],
-        include: [User, Restaurant],
-        raw: true,
-        nest: true
-      })
-    ])
-      .then(([restaurants, comments]) => {
-        res.render('feeds', { restaurants, comments })
-      })
-      .catch(err => next(err))
+    restaurantServices.getFeeds(req, (err, data) => err ? next(err) : res.render('feeds', data))
   },
   getTopRestaurants: (req, res, next) => {
   // 撈出所有 Restaurant 與 favorite 資料
