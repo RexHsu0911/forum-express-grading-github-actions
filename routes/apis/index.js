@@ -30,6 +30,7 @@ router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
 // favorite
 router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+router.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 
 // signup
 router.post('/signup', userController.signUp)

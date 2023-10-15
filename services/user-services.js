@@ -102,6 +102,23 @@ const userServices = {
       })
       .then(addFavorite => cb(null, { favorite: addFavorite }))
       .catch(err => cb(err))
+  },
+  removeFavorite: (req, cb) => {
+    const { restaurantId } = req.params
+    return Favorite.findOne({
+      where: {
+        userId: req.user.id,
+        restaurantId
+      }
+    })
+      .then(favorite => {
+        // 是否存在收藏
+        if (!favorite) throw new Error("You haven't favorited this restaurant!")
+
+        return favorite.destroy()
+      })
+      .then(removeFavorite => cb(null, { favorite: removeFavorite }))
+      .catch(err => cb(err))
   }
 }
 
