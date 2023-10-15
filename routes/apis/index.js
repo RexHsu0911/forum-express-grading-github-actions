@@ -28,6 +28,9 @@ router.get('/restaurants/:id/dashboard', authenticated, restaurantController.get
 router.get('/restaurants/:id', authenticated, restaurantController.getRestaurant)
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
+// favorite
+router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+
 // signup
 router.post('/signup', userController.signUp)
 // signin

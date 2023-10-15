@@ -48,28 +48,11 @@ const userController = {
     })
   },
   addFavorite: (req, res, next) => {
-    const { restaurantId } = req.params
-    return Promise.all([
-      Restaurant.findByPk(restaurantId), // 要收藏的這家餐廳是否存在？
-      Favorite.findOne({ // 確認這個收藏的關聯是否存在？
-        where: {
-          userId: req.user.id,
-          restaurantId
-        }
-      })
-    ])
-      .then(([restaurant, favorite]) => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        // 是否已存在收藏
-        if (favorite) throw new Error('You have favorited this restaurant!')
-
-        return Favorite.create({
-          userId: req.user.id,
-          restaurantId
-        })
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addFavorite(req, (err, data) => {
+      if (err) return next(err)
+      req.session.addFavorite = data
+      return res.redirect('back')
+    })
   },
   removeFavorite: (req, res, next) => {
     const { restaurantId } = req.params
