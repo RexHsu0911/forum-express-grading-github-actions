@@ -93,6 +93,22 @@ const restaurantServices = {
         })
       })
       .catch(err => cb(err))
+  },
+  getDashboard: (req, cb) => {
+    return Restaurant.findByPk(req.params.id, {
+      include: [
+        Category,
+        Comment,
+        { model: User, as: 'FavoritedUsers' }
+      ]
+      // {nest: true, raw: true} 可能會破壞一對多關聯
+    })
+      .then(restaurant => {
+        // console.log(restaurant.toJSON())
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        return cb(null, { restaurant: restaurant.toJSON() })
+      })
+      .catch(err => cb(err))
   }
 }
 
