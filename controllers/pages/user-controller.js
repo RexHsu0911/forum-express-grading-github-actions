@@ -1,5 +1,4 @@
 const { User, Restaurant, Favorite, Like, Followship } = require('../../models')
-const { localFileHandler } = require('../../helpers/file-helpers')
 const userServices = require('../../services/user-services')
 
 const userController = {
@@ -41,29 +40,12 @@ const userController = {
       .catch(err => next(err))
   },
   putUser: (req, res, next) => {
-    const { name } = req.body
-    // 判斷編輯使用者是否為自己的資料
-    if (req.user.id !== Number(req.params.id)) throw new Error('只能更改自己的資料！')
-    if (!name) throw new Error('User name is required!')
-
-    const { file } = req // 把檔案取出來
-    return Promise.all([
-      User.findByPk(req.params.id),
-      localFileHandler(file) // 把檔案傳到 file-helper 處理
-    ])
-      .then(([user, filePath]) => {
-        if (!user) throw new Error("User didn't exist!")
-
-        return user.update({
-          name,
-          image: filePath || user.image
-        })
-      })
-      .then(() => {
-        req.flash('success_messages', '使用者資料編輯成功')
-        res.redirect(`/users/${req.params.id}`)
-      })
-      .catch(err => next(err))
+    userServices.putUser(req, (err, data) => {
+      if (err) return next(err)
+      req.flash('success_messages', '使用者資料編輯成功')
+      req.session.editedUser = data
+      return res.redirect(`/users/${req.params.id}`)
+    })
   },
   addFavorite: (req, res, next) => {
     const { restaurantId } = req.params

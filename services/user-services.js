@@ -1,5 +1,6 @@
 const { User, Comment, Restaurant } = require('../models')
 const bcrypt = require('bcryptjs')
+const { localFileHandler } = require('../helpers/file-helpers')
 
 const userServices = {
   signUp: (req, cb) => {
@@ -54,6 +55,28 @@ const userServices = {
 
         return cb(null, { user })
       })
+      .catch(err => cb(err))
+  },
+  putUser: (req, cb) => {
+    const { name } = req.body
+    // 判斷編輯使用者是否為自己的資料
+    if (req.user.id !== Number(req.params.id)) throw new Error('只能更改自己的資料！')
+    if (!name) throw new Error('User name is required!')
+
+    const { file } = req // 把檔案取出來
+    return Promise.all([
+      User.findByPk(req.params.id),
+      localFileHandler(file) // 把檔案傳到 file-helper 處理
+    ])
+      .then(([user, filePath]) => {
+        if (!user) throw new Error("User didn't exist!")
+
+        return user.update({
+          name,
+          image: filePath || user.image
+        })
+      })
+      .then(editedUser => cb(null, { user: editedUser }))
       .catch(err => cb(err))
   }
 }
