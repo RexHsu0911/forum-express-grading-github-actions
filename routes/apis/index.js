@@ -12,10 +12,15 @@ const { authenticated, authenticatedAdmin } = require('../../middleware/api-auth
 
 const { apiErrorHandler } = require('../../middleware/error-handler')
 
+// admin
 router.use('/admin', authenticated, authenticatedAdmin, admin)
 
+// restaurants
 router.get('/restaurants', authenticated, restaurantController.getRestaurants)
 
+// signup
+router.post('/signup', userController.signUp)
+// signin
 // passport.authenticate() 指定了 Passport 的驗證策略
 // 'local' 用帳號密碼來做驗證
 // 設定關掉 sessions(不用 cookie-based 做驗證了，也就不需要 Passport 幫我們建立 session)
