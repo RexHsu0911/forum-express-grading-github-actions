@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const userServices = require('../../services/user-services')
 
 const userController = {
+  // 前端專案會找個方法把 token 儲存在用戶端，假設是 localStorage，當使用者按下畫面上的「登出」按鈕時，發生的事情是前端專案默默地把 localStorage 裡的 token 刪除。後端不需要製作 logout 的 API(任何一個 request 沒有攜帶 token，就代表無法登入)
   signIn: (req, res, next) => {
     // 不會進入反序列化中用 toJSON 的程序，因此物件尚未被整理過
     // 先用 toJSON 方法整理物件，再傳入 sign()
@@ -28,8 +29,10 @@ const userController = {
   },
   signUp: (req, res, next) => {
     userServices.signUp(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
+  getUser: (req, res, next) => {
+    userServices.getUser(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
   }
-  // 前端專案會找個方法把 token 儲存在用戶端，假設是 localStorage，當使用者按下畫面上的「登出」按鈕時，發生的事情是前端專案默默地把 localStorage 裡的 token 刪除。後端不需要製作 logout 的 API(任何一個 request 沒有攜帶 token，就代表無法登入)
 }
 
 module.exports = userController
