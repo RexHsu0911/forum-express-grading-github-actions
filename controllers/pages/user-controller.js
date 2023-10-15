@@ -1,5 +1,5 @@
-const { User, Followship } = require('../../models')
 const userServices = require('../../services/user-services')
+const { User } = require('../../models')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -82,43 +82,18 @@ const userController = {
     })
   },
   addFollowing: (req, res, next) => {
-    const { userId } = req.params
-    return Promise.all([
-      User.findByPk(userId), // 要追蹤的這個使用者是否存
-      Followship.findOne({ // 確認這個追蹤的關聯是否存在？
-        where: {
-          followerId: req.user.id,
-          followingId: userId
-        }
-      })
-    ])
-      .then(([user, followship]) => {
-        if (!user) throw new Error("User didn't exist!")
-        // 是否已存在追蹤
-        if (followship) throw new Error('You are already following this user!')
-
-        return Followship.create({
-          followerId: req.user.id,
-          followingId: userId
-        })
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
+    userServices.addFollowing(req, (err, data) => {
+      if (err) return next(err)
+      req.session.addFollowing = data
+      return res.redirect('back')
+    })
   },
   removeFollowing: (req, res, next) => {
-    const { userId } = req.params
-    return Followship.findOne({
-      where: {
-        followerId: req.user.id,
-        followingId: userId
-      }
+    userServices.removeFollowing(req, (err, data) => {
+      if (err) return next(err)
+      req.session.removeFollowing = data
+      return res.redirect('back')
     })
-      .then(followship => {
-        if (!followship) throw new Error("You haven't followed this user!")
-        return followship.destroy()
-      })
-      .then(() => res.redirect('back'))
-      .catch(err => next(err))
   }
 }
 
