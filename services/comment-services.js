@@ -21,7 +21,7 @@ const commentServices = {
           userId
         })
       })
-      .then(createdComment => cb(null, { comment: createdComment }))
+      .then(newComment => cb(null, { comment: newComment }))
       .catch(err => cb(err))
   },
   deleteComment: (req, cb) => {
