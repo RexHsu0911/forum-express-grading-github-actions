@@ -1,3 +1,5 @@
+![image](https://github.com/RexHsu0911/forum-express-grading-github-actions/assets/141574303/a0c7b114-0f61-4028-91ed-91fc88a3dd6f)
+
 # README
 
 1. Fork
