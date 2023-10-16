@@ -76,10 +76,7 @@ const userController = {
     })
   },
   getTopUsers: (req, res, next) => {
-    userServices.removeLike(req, (err, data) => {
-      if (err) return next(err)
-      return res.render('top-users', data)
-    })
+    userServices.getTopUsers(req, (err, data) => err ? next(err) : res.render('top-users', data))
   },
   addFollowing: (req, res, next) => {
     userServices.addFollowing(req, (err, data) => {

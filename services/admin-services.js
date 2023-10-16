@@ -1,7 +1,7 @@
 // 等同於 const db = require('../models')
 // const Restaurant = db.Restaurant
 // 採用解構賦值的寫法
-const { Restaurant, Category } = require('../models')
+const { Restaurant, Category, User } = require('../models')
 const { localFileHandler } = require('../helpers/file-helpers')
 
 const adminServices = {
@@ -16,16 +16,6 @@ const adminServices = {
         cb(null, { restaurants })
         // console.log('restaurants', restaurants)
       })
-      .catch(err => cb(err))
-  },
-  deleteRestaurant: (req, cb) => {
-    return Restaurant.findByPk(req.params.id)
-      .then(restaurant => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
-        return restaurant.destroy()
-      })
-      // 雖然目前後續不需要用到這筆資料，但我們預留了未來的可能性，前端有可能會想做一個「刪除成功」的彈跳視窗，讓使用者看見他刪除的資料
-      .then(deletedRestaurant => cb(null, { restaurant: deletedRestaurant }))
       .catch(err => cb(err))
   },
   postRestaurant: (req, cb) => {
@@ -51,6 +41,75 @@ const adminServices = {
         categoryId // 提交該餐廳的 category 資訊
       }))
       .then(newRestaurant => cb(null, { restaurant: newRestaurant }))
+      .catch(err => cb(err))
+  },
+  getRestaurant: (req, cb) => {
+    // req.params.id 則是對應到路由傳過來的參數(/:id)
+    return Restaurant.findByPk(req.params.id, { // 去資料庫用 id 找一筆資料
+      raw: true, // 找到以後整理格式再回傳
+      nest: true, // {raw: true, est: true} 相等於 .toJSON()
+      include: [Category]
+    })
+      .then(restaurant => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!") //  如果找不到，回傳錯誤訊息，後面不執行
+        return cb(null, { restaurant })
+      })
+      .catch(err => cb(err))
+  },
+  putRestaurant: (req, cb) => {
+    const { name, tel, address, openingHours, description, categoryId } = req.body
+    if (!name) throw new Error('Restaurant name is required!')
+    // 沒有設定 { raw: true } 來整理成乾淨的資料，是因為會把 sequelize 提供的 restaurant.update 這個方法過濾掉
+    const { file } = req // 把檔案取出來
+    return Promise.all([ // 非同步處理
+      Restaurant.findByPk(req.params.id), // 去資料庫查有沒有這間餐廳
+      localFileHandler(file) // 把檔案傳到 file-helper 處理
+    ])
+      .then(([restaurant, filePath]) => { // 以上兩樣事都做完以後
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        return restaurant.update({
+          name,
+          tel,
+          address,
+          openingHours,
+          description,
+          // 如果 filePath 是 Truthy (使用者有上傳新照片) 就用 filePath，是 Falsy (使用者沒有上傳新照片) 就沿用原本資料庫內的值
+          image: filePath || restaurant.image,
+          categoryId // 提交該餐廳的 category 資訊
+        })
+      })
+      .then(editedRestaurant => cb(null, { restaurant: editedRestaurant }))
+      .catch(err => cb(err))
+  },
+  deleteRestaurant: (req, cb) => {
+    return Restaurant.findByPk(req.params.id)
+      .then(restaurant => {
+        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        return restaurant.destroy()
+      })
+      // 雖然目前後續不需要用到這筆資料，但我們預留了未來的可能性，前端有可能會想做一個「刪除成功」的彈跳視窗，讓使用者看見他刪除的資料
+      .then(deletedRestaurant => cb(null, { restaurant: deletedRestaurant }))
+      .catch(err => cb(err))
+  },
+  getUsers: (req, cb) => {
+    return User.findAll({
+      raw: true
+    })
+      .then(users => cb(null, { users }))
+      .catch(err => cb(err))
+  },
+  patchUser: (req, cb) => {
+    return User.findByPk(req.params.id)
+      .then(user => {
+        if (!user) throw new Error("User didn't exist!")
+        // 使用者是否為 root(超級使用者)
+        // console.log('email:', user.email)
+        if (user.email === 'root@example.com') throw new Error('禁止變更 root 權限')
+        return user.update({
+          isAdmin: !user.isAdmin // 反值
+        })
+      })
+      .then(patchedUser => cb(null, { user: patchedUser }))
       .catch(err => cb(err))
   }
 }

@@ -5,11 +5,23 @@ const adminController = {
     // 請求成功：回應 status:success 及資料(data)給前端
     adminServices.getRestaurants(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
   },
+  postRestaurant: (req, res, next) => {
+    adminServices.postRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
+  getRestaurant: (req, res, next) => {
+    adminServices.getRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
+  putRestaurant: (req, res, next) => {
+    adminServices.putRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
   deleteRestaurant: (req, res, next) => {
     adminServices.deleteRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
   },
-  postRestaurant: (req, res, next) => {
-    adminServices.postRestaurant(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  getUsers: (req, res, next) => {
+    adminServices.getUsers(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
+  },
+  patchUser: (req, res, next) => {
+    adminServices.patchUser(req, (err, data) => err ? next(err) : res.json({ status: 'success', data }))
   }
 }
 

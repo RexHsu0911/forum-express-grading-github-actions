@@ -7,9 +7,15 @@ const categoryController = require('../../../controllers/apis/category-controlle
 const upload = require('../../../middleware/multer')
 
 // restaurants
+router.get('/restaurants/:id', adminController.getRestaurant)
+router.put('/restaurants/:id', upload.single('image'), adminController.putRestaurant)
 router.delete('/restaurants/:id', adminController.deleteRestaurant)
 router.get('/restaurants', adminController.getRestaurants)
 router.post('/restaurants', upload.single('image'), adminController.postRestaurant)
+
+// users
+router.patch('/users/:id', adminController.patchUser)
+router.get('/users', adminController.getUsers)
 
 // categories
 router.get('/categories/:id', categoryController.getCategories)

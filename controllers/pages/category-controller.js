@@ -2,10 +2,7 @@ const categoryServices = require('../../services/category-services')
 
 const categoryController = {
   getCategories: (req, res, next) => {
-    categoryServices.getCategories(req, (err, data) => {
-      if (err) return next(err)
-      return res.render('admin/categories', data)
-    })
+    categoryServices.getCategories(req, (err, data) => err ? next(err) : res.render('admin/categories', data))
   },
   postCategory: (req, res, next) => {
     categoryServices.postCategory(req, (err, data) => {
