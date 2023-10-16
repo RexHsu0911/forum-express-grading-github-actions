@@ -31,7 +31,7 @@ describe('# R02: 餐廳資訊整理：Dashboard', function () {
       }])
 
       // 連向模擬的 tables
-      this.restaurantController = createControllerProxy('../controllers/restaurant-controller', { 
+      this.restaurantController = createControllerProxy('../controllers/pages/restaurant-controller', { 
         User: this.UserMock, 
         Category: this.CategoryMock, 
         Restaurant: this.RestaurantMock,

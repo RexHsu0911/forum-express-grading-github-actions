@@ -40,7 +40,7 @@ const restaurantServices = {
           // 使用展開運算子（spread operator） ...r，將 r 的物件拷貝並做出做局部修改，在展開之後會出現兩個重複的 description，但當 key 重複時，會被後面出現的取代
           ...r,
           // 將餐廳敘述文字（description）截為 50 個字
-          description: r.description.substring(0, 50),
+          description: r.description?.substring(0, 50),
           // includes 方法進行比對 restaurants.id 是否有被使用者收藏，最後會回傳布林值
           isFavorited: favoritedRestaurantsId.includes(r.id),
           // 比對 restaurants.id 是否有被使用者喜歡
@@ -148,7 +148,7 @@ const restaurantServices = {
             // 整理格式
             ...restaurant.toJSON(),
             // 將餐廳敘述文字（description）截為 50 個字
-            description: restaurant.description.substring(0, 50),
+            description: restaurant.description?.substring(0, 50),
             // 計算收藏者人數
             favoritedCount: restaurant.FavoritedUsers.length,
             // 判斷目前登入使用者是否已收藏該 user 的物件

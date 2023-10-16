@@ -25,7 +25,7 @@ describe('# R03', () => {
         }])
 
         // 修改 userController 中的資料庫連線設定，由連向真實的資料庫 -> 改為連向模擬的 User table
-        this.userController = createControllerProxy('../controllers/user-controller', { User: this.UserMock })
+        this.userController = createControllerProxy('../controllers/pages/user-controller', { User: this.UserMock })
       })
 
       // 開始測試
@@ -71,7 +71,7 @@ describe('# R03', () => {
         }])
 
         // 連向模擬的 User table
-        this.userController = createControllerProxy('../controllers/user-controller', { User: this.UserMock })
+        this.userController = createControllerProxy('../controllers/pages/user-controller', { User: this.UserMock })
       })
 
       it(' GET /users/:id/edit ', async () => {
@@ -117,7 +117,7 @@ describe('# R03', () => {
         )
 
         // 連向模擬的 User table
-        this.userController = createControllerProxy('../controllers/user-controller', { User: this.UserMock })
+        this.userController = createControllerProxy('../controllers/pages/user-controller', { User: this.UserMock })
       })
 
       it(' PUT /users/:id ', async () => {

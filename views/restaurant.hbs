@@ -50,7 +50,7 @@
 <h3 class="mb-3">所有評論：</h3>
 {{#each restaurant.Comments}}
 {{!-- 要用 ../user.isAdmin 走到上一層，才能順利取到 user.isAdmin --}}
-{{#if ../user.isAdmin}}
+{{#if ../loginUser.isAdmin}}
 <form action="/comments/{{this.id}}?_method=DELETE" method="POST" class="float-end">
   <button type="submit" class="btn btn-danger">Delete</button>
 </form>
