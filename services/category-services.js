@@ -7,8 +7,11 @@ const categoryServices = {
       // 若參數裡有 id 存在，就撈出這 id 的資料(變數 category)並傳到 views，否則就傳空值
       req.params.id ? Category.findByPk(req.params.id, { raw: true }) : null
     ])
-      .then(([categories, category]) =>
-        cb(null, { categories, category }))
+      .then(([categories, category]) => {
+        if (!categories) throw new Error("categories didn't exist!")
+        if (!categories && !category) throw new Error("Category didn't exist!")
+        cb(null, { categories, category })
+      })
       .catch(err => cb(err))
   },
   postCategory: (req, cb) => {

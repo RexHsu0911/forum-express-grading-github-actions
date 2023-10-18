@@ -167,6 +167,7 @@ const userServices = {
       include: [{ model: User, as: 'Followers' }]
     })
       .then(users => {
+        if (!users) throw new Error("Users didn't exist!")
         // 另外宣告變數 result，保留舊資料 users 以判斷資料加工有無差錯
         const result = users
           // 整理 users 資料，把每個 user 項目都拿出來處理一次，並把新陣列儲存在 users 裡

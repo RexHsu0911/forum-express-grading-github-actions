@@ -17,8 +17,8 @@
     <p>
 
     {{!-- 使用者不能追蹤自己 --}}
-    {{#ifCond loginUser.id this.id}}
-    <h2>無法追蹤</h2>
+    {{!-- 在 {{#each}} 的迴圈內，需加上 ../ 來取用上一層的變數 loginUser.id --}}
+    {{#ifCond ../loginUser.id this.id}}
     {{else}}
         {{!-- follow button --}}
         {{#if this.isFollowed }}

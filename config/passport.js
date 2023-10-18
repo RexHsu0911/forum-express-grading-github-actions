@@ -25,15 +25,19 @@ passport.use(new LocalStrategy(
     User.findOne({ where: { email } })
       .then(user => {
         // user(email) 不存在
-        if (!user) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！'))
+        // if (!user) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！')) 改寫成把錯誤拋出去，才會收到 error response
+        if (!user) throw new Error('帳號或密碼輸入錯誤！')
         // user 存在，驗證密碼
         bcrypt.compare(password, user.password)
           .then(res => {
             // 密碼不一致
-            if (!res) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！'))
+            // if (!res) return cb(null, false, req.flash('error_messages', '帳號或密碼輸入錯誤！')) 改寫成把錯誤拋出去，才會收到 error response
+            if (!res) throw new Error('帳號或密碼輸入錯誤！')
             return cb(null, user)
           })
+          .catch(err => cb(err))
       })
+      .catch(err => cb(err))
   }
 ))
 

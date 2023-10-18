@@ -13,6 +13,7 @@ const adminServices = {
       include: [Category] // include 取得關聯資料 Category
     })
       .then(restaurants => {
+        if (!restaurants) throw new Error("Restaurants didn't exist!")
         cb(null, { restaurants })
         // console.log('restaurants', restaurants)
       })
@@ -95,7 +96,10 @@ const adminServices = {
     return User.findAll({
       raw: true
     })
-      .then(users => cb(null, { users }))
+      .then(users => {
+        if (!users) throw new Error("Users didn't exist!")
+        cb(null, { users })
+      })
       .catch(err => cb(err))
   },
   patchUser: (req, cb) => {
