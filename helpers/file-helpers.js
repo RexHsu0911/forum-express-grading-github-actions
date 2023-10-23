@@ -1,5 +1,10 @@
 // fs (File system) 模組是 Node.js 提供專門來處理檔案的原生模組
 const fs = require('fs')
+// imgur 網路相簿服務
+const imgur = require('imgur')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+
+imgur.setClientId(IMGUR_CLIENT_ID)
 
 const localFileHandler = file => { // file 是 multer 處理完的檔案
   return new Promise((resolve, reject) => {
@@ -15,6 +20,20 @@ const localFileHandler = file => { // file 是 multer 處理完的檔案
   })
 }
 
+const imgurFileHandler = file => {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve(null)
+
+    return imgur.uploadFile(file.path)
+      .then(img => {
+        // 嘗試解析出圖片的連結（img?.link），如果成功，則使用resolve將Promise解析為該圖片連結
+        resolve(img?.link || null)
+      })
+      .catch(err => reject(err))
+  })
+}
+
 module.exports = {
-  localFileHandler
+  localFileHandler,
+  imgurFileHandler
 }
