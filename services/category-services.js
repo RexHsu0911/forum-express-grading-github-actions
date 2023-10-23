@@ -8,25 +8,63 @@ const categoryServices = {
       req.params.id ? Category.findByPk(req.params.id, { raw: true }) : null
     ])
       .then(([categories, category]) => {
-        if (!categories) throw new Error("categories didn't exist!")
-        if (!categories && !category) throw new Error("Category didn't exist!")
+        if (!categories) {
+          const err = new Error("categories didn't exist!")
+          err.status = 404
+          throw err
+        }
+        if (!categories && !category) {
+          const err = new Error("Category didn't exist!")
+          err.status = 404
+          throw err
+        }
         cb(null, { categories, category })
       })
       .catch(err => cb(err))
   },
   postCategory: (req, cb) => {
     const { name } = req.body
-    if (!name) throw new Error('Category name is required!')
-    return Category.create({ name })
+    if (!name) {
+      const err = new Error('Category name is required!')
+      err.status = 400
+      throw err
+    }
+    return Category.findOne({ where: { name } })
+      .then(categoryName => {
+        if (categoryName) {
+          const err = new Error('Category name already existed!')
+          err.status = 409
+          throw err
+        }
+
+        return Category.create({ name })
+      })
       .then(newCategory => cb(null, { category: newCategory }))
       .catch(err => cb(err))
   },
   putCategory: (req, cb) => {
     const { name } = req.body
-    if (!name) throw new Error('Category name is required!')
-    return Category.findByPk(req.params.id)
-      .then(category => {
-        if (!category) throw new Error("Category didn't exist!")
+    if (!name) {
+      const err = new Error('Category name is required!')
+      err.status = 400
+      throw err
+    }
+    return Promise.all([
+      Category.findByPk(req.params.id),
+      Category.findOne({ where: { name } })
+    ])
+      .then(([category, categoryName]) => {
+        if (!category) {
+          const err = new Error("Category didn't exist!")
+          err.status = 404
+          throw err
+        }
+        if (categoryName) {
+          const err = new Error('Category name already existed!')
+          err.status = 409
+          throw err
+        }
+
         return category.update({ name })
       })
       .then(editedCategory => cb(null, { category: editedCategory }))
@@ -35,7 +73,13 @@ const categoryServices = {
   deleteCategory: (req, cb) => {
     return Category.findByPk(req.params.id)
       .then(category => {
-        if (!category) throw new Error("Category didn't exist!") // 反查，確認要刪除的類別存在，再進行下面刪除動作
+        // 反查，確認要刪除的類別存在，再進行下面刪除動作
+        if (!category) {
+          const err = new Error("Category didn't exist!")
+          err.status = 404
+          throw err
+        }
+
         return category.destroy()
       })
       .then(deletedCategory => cb(null, { category: deletedCategory }))

@@ -5,15 +5,27 @@ const commentServices = {
   // 從 req 中取出表單發送過來的 text、restaurantId 及 userId 資料
     const { restaurantId, text } = req.body
     const userId = req.user.id
-    if (!text) throw new Error('Comment text is required!')
+    if (!text) {
+      const err = new Error('Comment text is required!')
+      err.status = 400
+      throw err
+    }
 
     return Promise.all([
       User.findByPk(userId),
       Restaurant.findByPk(restaurantId)
     ])
       .then(([user, restaurant]) => {
-        if (!user) throw new Error("User didn't exist!")
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        if (!user) {
+          const err = new Error("User didn't exist!")
+          err.status = 404
+          throw err
+        }
+        if (!restaurant) {
+          const err = new Error("Restaurant didn't exist!")
+          err.status = 404
+          throw err
+        }
 
         return Comment.create({
           text,
@@ -27,7 +39,12 @@ const commentServices = {
   deleteComment: (req, cb) => {
     return Comment.findByPk(req.params.id)
       .then(comment => {
-        if (!comment) throw new Error("Comment didn't exist!")
+        if (!comment) {
+          const err = new Error("Comment didn't exist!")
+          err.status = 404
+          throw err
+        }
+
         return comment.destroy()
       })
       .then(deletedComment => cb(null, { comment: deletedComment }))

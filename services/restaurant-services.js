@@ -30,7 +30,16 @@ const restaurantServices = {
     Category.findAll({ raw: true }) // Category table 撈出全部的類別資料
     ])
       .then(([restaurants, categories]) => {
-        if (!restaurants) throw new Error("restaurants didn't exist!")
+        if (!restaurants) {
+          const err = new Error("Restaurants didn't exist!")
+          err.status = 404
+          throw err
+        }
+        if (!categories) {
+          const err = new Error("Categories didn't exist!")
+          err.status = 404
+          throw err
+        }
         // 在輸出餐廳列表時，「現在這間餐廳」是否有出現在「使用者的收藏清單」裡面
         // 可選串連運算子?.
         // req.user?.FavoritedRestaurants 判斷 req.user 是否存在，不存在的話，會回傳 undefined
@@ -73,7 +82,12 @@ const restaurantServices = {
     })
       .then(restaurant => {
         // console.log(restaurant.Comments[0].dataValues)
-        if (!restaurant) throw new Error("restaurant didn't exist!")
+        if (!restaurant) {
+          const err = new Error("Restaurant didn't exist!")
+          err.status = 404
+          throw err
+        }
+
         // console.log(restaurant.toJSON())
         // restaurant.increment 更新 viewCounts 的數值(+1)
         return restaurant.increment('viewCounts')
@@ -106,7 +120,11 @@ const restaurantServices = {
     })
       .then(restaurant => {
         // console.log(restaurant.toJSON())
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        if (!restaurant) {
+          const err = new Error("Restaurant didn't exist!")
+          err.status = 404
+          throw err
+        }
         return cb(null, { restaurant: restaurant.toJSON() })
       })
       .catch(err => cb(err))
@@ -130,8 +148,16 @@ const restaurantServices = {
       })
     ])
       .then(([restaurants, comments]) => {
-        if (!restaurants) throw new Error("restaurants didn't exist!")
-        if (!comments) throw new Error("comments didn't exist!")
+        if (!restaurants) {
+          const err = new Error("Restaurants didn't exist!")
+          err.status = 404
+          throw err
+        }
+        if (!comments) {
+          const err = new Error("Comments didn't exist!")
+          err.status = 404
+          throw err
+        }
         cb(null, { restaurants, comments })
       })
       .catch(err => cb(err))
@@ -144,7 +170,11 @@ const restaurantServices = {
       }]
     })
       .then(restaurants => {
-        if (!restaurants) throw new Error("restaurants didn't exist!")
+        if (!restaurants) {
+          const err = new Error("Restaurants didn't exist!")
+          err.status = 404
+          throw err
+        }
         // console.log(restaurants)
         // 整理 restaurants 資料，把每個 restaurant 項目都拿出來處理一次，並把新陣列儲存在 restaurants 裡
         const result = restaurants

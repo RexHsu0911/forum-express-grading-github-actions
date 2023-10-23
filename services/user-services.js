@@ -1,16 +1,24 @@
 const { User, Comment, Restaurant, Favorite, Like, Followship } = require('../models')
 const bcrypt = require('bcryptjs')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { imgurFileHandler } = require('../helpers/file-helpers')
 
 const userServices = {
   signUp: (req, cb) => {
     // 如果兩次輸入的密碼不同，就建立一個 Error 物件並拋出(throw)
-    if (req.body.password !== req.body.passwordCheck) throw new Error('Passwords do not match!')
-
+    if (req.body.password !== req.body.passwordCheck) {
+      const err = new Error('Passwords do not match!')
+      err.status = 400
+      throw err
+    }
     // 確認資料裡面沒有一樣的 email，若有，就建立一個 Error 物件並拋出(throw)
-    User.findOne({ where: { email: req.body.email } })
+    return User.findOne({ where: { email: req.body.email } })
       .then(user => {
-        if (user) throw new Error('Email already exists!')
+        if (user) {
+          const err = new Error('Email already existed!')
+          err.status = 409
+          throw err
+        }
+
         // 透過 bcrypt 使用雜湊演算法，把使用者密碼轉成暗碼
         // return 讓這個 Promise resolve 的值可以傳到下一個 .then 裡面
         return bcrypt.hash(req.body.password, 10)
@@ -37,7 +45,11 @@ const userServices = {
       ]
     })
       .then(user => {
-        if (!user) throw new Error("User didn't exist!")
+        if (!user) {
+          const err = new Error("User didn't exist!")
+          err.status = 404
+          throw err
+        }
         user = user.toJSON() // 簡化為 JSON 字串
         // console.log(user)
 
@@ -60,16 +72,27 @@ const userServices = {
   putUser: (req, cb) => {
     const { name } = req.body
     // 判斷編輯使用者是否為自己的資料
-    if (req.user.id !== Number(req.params.id)) throw new Error('只能更改自己的資料！')
-    if (!name) throw new Error('User name is required!')
-
+    if (req.user.id !== Number(req.params.id)) {
+      const err = new Error('只能更改自己的資料！')
+      err.status = 403
+      throw err
+    }
+    if (!name) {
+      const err = new Error('User name is required!')
+      err.status = 400
+      throw err
+    }
     const { file } = req // 把檔案取出來
     return Promise.all([
       User.findByPk(req.params.id),
-      localFileHandler(file) // 把檔案傳到 file-helper 處理
+      imgurFileHandler(file) // 把檔案傳到 file-helper 處理
     ])
       .then(([user, filePath]) => {
-        if (!user) throw new Error("User didn't exist!")
+        if (!user) {
+          const err = new Error("User didn't exist!")
+          err.status = 404
+          throw err
+        }
 
         return user.update({
           name,
@@ -91,9 +114,17 @@ const userServices = {
       })
     ])
       .then(([restaurant, favorite]) => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        if (!restaurant) {
+          const err = new Error("Restaurant didn't exist!")
+          err.status = 404
+          throw err
+        }
         // 是否已存在收藏
-        if (favorite) throw new Error('You have favorited this restaurant!')
+        if (favorite) {
+          const err = new Error('You have favorited this restaurant!')
+          err.status = 409
+          throw err
+        }
 
         return Favorite.create({
           userId: req.user.id,
@@ -113,7 +144,11 @@ const userServices = {
     })
       .then(favorite => {
         // 是否存在收藏
-        if (!favorite) throw new Error("You haven't favorited this restaurant!")
+        if (!favorite) {
+          const err = new Error("You haven't favorited this restaurant!")
+          err.status = 409
+          throw err
+        }
 
         return favorite.destroy()
       })
@@ -132,9 +167,17 @@ const userServices = {
       })
     ])
       .then(([restaurant, like]) => {
-        if (!restaurant) throw new Error("Restaurant didn't exist!")
+        if (!restaurant) {
+          const err = new Error("Restaurant didn't exist!")
+          err.status = 404
+          throw err
+        }
         // 是否已存在喜歡
-        if (like) throw new Error('You have liked this restaurant!')
+        if (like) {
+          const err = new Error('You have liked this restaurant!')
+          err.status = 409
+          throw err
+        }
 
         return Like.create({
           userId: req.user.id,
@@ -154,7 +197,11 @@ const userServices = {
     })
       .then(like => {
         // 是否存在喜歡
-        if (!like) throw new Error("You haven't liked this restaurant!")
+        if (!like) {
+          const err = new Error("You haven't liked this restaurant!")
+          err.status = 409
+          throw err
+        }
 
         return like.destroy()
       })
@@ -167,7 +214,11 @@ const userServices = {
       include: [{ model: User, as: 'Followers' }]
     })
       .then(users => {
-        if (!users) throw new Error("Users didn't exist!")
+        if (!users) {
+          const err = new Error("Users didn't exist!")
+          err.status = 404
+          throw err
+        }
         // 另外宣告變數 result，保留舊資料 users 以判斷資料加工有無差錯
         const result = users
           // 整理 users 資料，把每個 user 項目都拿出來處理一次，並把新陣列儲存在 users 裡
@@ -201,9 +252,17 @@ const userServices = {
       })
     ])
       .then(([user, followship]) => {
-        if (!user) throw new Error("User didn't exist!")
+        if (!user) {
+          const err = new Error("User didn't exist!")
+          err.status = 404
+          throw err
+        }
         // 是否已存在追蹤
-        if (followship) throw new Error('You are already following this user!')
+        if (followship) {
+          const err = new Error('You are already following this user!')
+          err.status = 409
+          throw err
+        }
 
         return Followship.create({
           followerId: req.user.id,
@@ -222,7 +281,12 @@ const userServices = {
       }
     })
       .then(followship => {
-        if (!followship) throw new Error("You haven't followed this user!")
+        if (!followship) {
+          const err = new Error("You haven't followed this user!")
+          err.status = 409
+          throw err
+        }
+
         return followship.destroy()
       })
       .then(removeFollowing => cb(null, { followship: removeFollowing }))
